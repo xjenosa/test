@@ -1,94 +1,93 @@
-/*************************************************************************************
-* OOP244 - 2261
-*
-* Student Name : Maximilian Ali
-* Student Email : mali291@myseneca.ca
-* Workshop #  : 1
-* Course/Section: OOP244/NRA
-*
-* I declare that this assignment is my own work in accordance with the Seneca Academic
-* Policy. No part of this assignment has been copied manually or electronically from/to
-* any other source (including web sites) or distributed to other students.
-*
-* I have done all the coding by myself and only copied the code that my professor
-* provided to complete my workshops and assignments.
-*
-* I have received help from the following students:
-*  - Tuan Khai Ngo / NCC
-*
-* I have helped the following students:
-*  - Christian Rafael / NCC
-*
-**************************************************************************************/
+/* Citation and Sources...
+-----------------------------------------------------------
+Workshop 01
+Module: io
+Filename: io.cpp
+-----------------------------------------------------------
+Author: Christian Rafael
+Student number: 139492243
+Email: crafael@myseneca.ca
+Subject: OOP244 - NCC
+-----------------------------------------------------------
+Revision History
+------- --------- ------------------------------------------
+Version Date      Reason
+V1.0    2026/19/1  Initial version
+-----------------------------------------------------------
+I have done all the coding by myself and only copied the code
+that my professor provided to complete my work for function whatever.
+-----------------------------------------------------------
+*/
 
-// io.cpp
 #include "io.h"
 #include "cstr.h"
-using namespace seneca;
+#include <iostream>
 using namespace std;
+using namespace seneca;
 
 namespace seneca {
-    void read(char *name){
-        cout << "Name\n> ";
-        cin >> name;
-    }
+	void read(char* name) {
+		cout << "name>\n";
+		cin >> name;
+	}
 
-    void print(long long phoneNumber){
-        cout << "(" << (phoneNumber / 10000000) << ") ";
-        cout << ((phoneNumber % 10000000) / 10000) << "-";
-        cout << (phoneNumber % 10000);
-    }
+	void print(long long phoneNum) {
+		long long first3digit = phoneNum / 10000000;
+		long long mid3digit = (phoneNum / 10000) % 1000;
+		long long last4digit = phoneNum % 10000;
 
-    void print(const PhoneRec &pr, size_t &rowNum, const char *filter){
-       if(filter == nullptr || strstr(pr.lastName, filter) != nullptr || strstr(pr.firstName, filter) != nullptr){
-            cout << rowNum << ": " << pr.firstName << " " << pr.lastName << " ";
-            print(pr.phoneNumber);
-            cout << endl;
-            rowNum++;
-       }
-    }
+		cout << "(" << first3digit << ") ";
+		cout << mid3digit << "-";
+		cout << last4digit << endl;
+	}
 
-    bool read(PhoneRec &pr, FILE *file){
-        bool tf;
-        if(fscanf(file, "%s %s %lld", pr.firstName, pr.lastName, &pr.phoneNumber) == 3){
-            tf = true;
-        }
-        else tf = false;
-        return tf;
-    }
+	void print(const PhoneRec& rec, size_t& rowNum, const char* filter) {
+		if(filter == nullptr || strstr(rec.firstName, filter) != nullptr|| strstr(rec.lastName, filter) != nullptr) {
+			cout << rowNum << ": " << rec.firstName << " " << rec.lastName << " ";
+			print(rec.phoneNum);
+			rowNum++;
+		}
+	}
 
-    void print(const PhoneRec *pr[], size_t size, const char *filter){
-        size_t rowNum = 1;
-        for(size_t i = 0; i < size; i++){
-            print(*pr[i], rowNum, filter);
-        }
-    }
+	bool read(PhoneRec& rec, FILE* fp) {
+		if(fscanf(fp, "%s %s %lld", rec.firstName, rec.lastName, &rec.phoneNum) == 3) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
-    void setPointers(PhoneRec *pr[], PhoneRec records[], size_t size){
-        for(size_t i = 0; i < size; i++){
-            pr[i] = &records[i];
-        }
-    }
+	void print(const PhoneRec* recs[], size_t size, const char* filter) {
+		size_t rowNum = 1;
+		for(size_t i = 0; i < size; i++) {
+			print(*recs[i], rowNum, filter);
+		}
+	}
 
-    void sort(PhoneRec *pr[], size_t size, bool flag){
-        PhoneRec *buff;
-        for(size_t i = 0; i < size - 1; i++){
-            for(size_t j = i + 1; j < size; j++){
-                if(flag){
-                    if(strcmp(pr[i]->lastName, pr[j]->lastName) > 0){
-                        buff = pr[i];
-                        pr[i] = pr[j];
-                        pr[j] = buff;
-                    }
-                }
-                else{
-                    if(strcmp(pr[i]->firstName, pr[j]->firstName) > 0){
-                        buff = pr[i];
-                        pr[i] = pr[j];
-                        pr[j] = buff;
-                    }
-                }
-            }
-        }
-    }
+	void setPointers(PhoneRec* recs[], PhoneRec rec[], size_t size) {
+		for(size_t i = 0; i < size; i++) {
+			recs[i] = &rec[i];
+		}
+	}
+	
+	void sort(PhoneRec* recs[], size_t size, bool byLastName) {
+		for(size_t i = 0; i < size - 1; i++) {
+			for(size_t j = i + 1; j < size; j++) {
+				int cmp = 0;
+				if(byLastName) {
+					cmp = strcmp(recs[i]->lastName, recs[j]->lastName);
+				} else {
+					cmp = strcmp(recs[i]->firstName, recs[j]->firstName);
+				}
+
+				if(cmp > 0) { // if not ascending
+					PhoneRec* tempRec = recs[i];
+					recs[i] = recs[j];
+					recs[j] = tempRec;
+				}
+			}
+		}
+	}
+
 }
